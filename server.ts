@@ -1,9 +1,14 @@
-require("dotenv").config(); //get environment variables form env file to env.process
+import dotenv from 'dotenv';
 import cors from "cors";
 import express from "express";
 import expressRateLimit from "express-rate-limit";
 import catchAll from "./03-middlewares/catch-all";
 import logger from "./03-middlewares/logger";
+import recipesRouter from "./05-routes/recipesRouter";
+
+
+// Load environment variables from .env file
+dotenv.config();
 
 const server = express();
 
@@ -17,7 +22,7 @@ server.use(express.json());
 server.use(cors());
 server.use(logger);
 
-server.use('/api')
+server.use('/recipes', recipesRouter);
 
 server.use(catchAll);
 
