@@ -1,11 +1,14 @@
 import express from "express";
-import recipesController from '../04-controllers/recipesController';
+import { getRecipes, getRecipeById, addRecipe, deleteRecipeById } from '../04-controllers/recipesController';
+// import recipesController from '../04-controllers/recipesController';
+import validateId from "../03-middlewares/validateId";
+import recipeValidationSchema from "../03-middlewares/recipeValidationSchema";
 
 const router = express.Router();
 
-router.get('/', recipesController.getRecipes);
-router.get('/:id', recipesController.getRecipeById);
-router.post('/', recipesController.addRecipe);
-router.delete('/:id', recipesController.deleteRecipeById);
+router.get('/', getRecipes);
+router.get('/:id', validateId, getRecipeById);
+router.post('/', recipeValidationSchema, addRecipe);
+router.delete('/:id', validateId, deleteRecipeById);
 
 export default router;

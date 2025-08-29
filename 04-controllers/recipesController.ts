@@ -2,27 +2,25 @@ import { Request, Response, NextFunction } from "express";
 import recipesModel from "../02-models/recipesModel";
 import StatusCode from "../01-utils/status-code";
 
-function getRecipes(request: Request, response: Response, next: NextFunction) {
+export function getRecipes(request: Request, response: Response, next: NextFunction) {
     const recipes = recipesModel.getRecipes();
     response.status(StatusCode.OK).json(recipes);
 }
 
-function getRecipeById(request: Request, response: Response, next: NextFunction) {
+export function getRecipeById(request: Request, response: Response, next: NextFunction) {
     const id = request.params.id;
     const recipe = recipesModel.getRecipeById(id);
     response.status(StatusCode.OK).json(recipe);
 }
 
-function addRecipe(request: Request, response: Response, next: NextFunction) {
+export function addRecipe(request: Request, response: Response, next: NextFunction) {
+    recipesModel.validateRecipeBody(request); //validate req.body
     const newRecipe = recipesModel.addRecipe(request.body);
-    response.status(StatusCode.OK).json(newRecipe);
-}
-function deleteRecipeById(request: Request, response: Response, next: NextFunction) {
-    const id = request.params.id;
-    recipesModel.deleteRecipeById(id);
-    response.status(StatusCode.OK).json({message:'ok'})
+    response.status(StatusCode.Created).json({message:'New recipe created'});
 }
 
-export default {
-    getRecipes, getRecipeById, addRecipe, deleteRecipeById
+export function deleteRecipeById(request: Request, response: Response, next: NextFunction) {
+    const id = request.params.id;
+    recipesModel.deleteRecipeById(id);
+    response.status(StatusCode.NoContent).json({message:`Recipe ${id} deleted`})
 }
