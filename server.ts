@@ -5,6 +5,7 @@ import expressRateLimit from "express-rate-limit";
 import catchAll from "./03-middlewares/catch-all";
 import logger from "./03-middlewares/logger";
 import recipesRouter from "./05-routes/recipesRouter";
+import routeNotFound from './03-middlewares/routeNotFound';
 
 
 // Load environment variables from .env file
@@ -23,6 +24,8 @@ server.use(cors());
 server.use(logger);
 
 server.use('/recipes', recipesRouter);
+
+server.use(routeNotFound)
 
 server.use(catchAll);
 
