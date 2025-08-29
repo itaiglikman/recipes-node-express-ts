@@ -1,6 +1,5 @@
 import express from "express";
 import { getRecipes, getRecipeById, addRecipe, deleteRecipeById } from '../04-controllers/recipesController';
-// import recipesController from '../04-controllers/recipesController';
 import validateId from "../03-middlewares/validateId";
 import recipeValidationSchema from "../03-middlewares/recipeValidationSchema";
 

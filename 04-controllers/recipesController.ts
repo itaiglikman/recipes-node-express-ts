@@ -1,9 +1,12 @@
-import { Request, Response, NextFunction } from "express";
-import recipesModel from "../02-models/recipesModel";
+import { NextFunction, Request, Response } from "express";
 import StatusCode from "../01-utils/status-code";
+import recipesModel from "../02-models/recipesModel";
 
 export function getRecipes(request: Request, response: Response, next: NextFunction) {
-    const recipes = recipesModel.getRecipes();
+    const existingQueries = Object.keys(request.query).length;
+    const recipes = existingQueries
+        ? recipesModel.getRecipesByQuery(request)
+        : recipesModel.getRecipes();
     response.status(StatusCode.OK).json(recipes);
 }
 
@@ -15,12 +18,12 @@ export function getRecipeById(request: Request, response: Response, next: NextFu
 
 export function addRecipe(request: Request, response: Response, next: NextFunction) {
     recipesModel.validateRecipeBody(request); //validate req.body
-    const newRecipe = recipesModel.addRecipe(request.body);
-    response.status(StatusCode.Created).json({message:'New recipe created'});
+    recipesModel.addRecipe(request.body);
+    response.status(StatusCode.Created).json({ message: 'New recipe created' });
 }
 
 export function deleteRecipeById(request: Request, response: Response, next: NextFunction) {
     const id = request.params.id;
     recipesModel.deleteRecipeById(id);
-    response.status(StatusCode.NoContent).json({message:`Recipe ${id} deleted`})
+    response.sendStatus(StatusCode.NoContent)
 }
