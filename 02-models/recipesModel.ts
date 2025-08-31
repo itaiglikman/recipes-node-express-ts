@@ -1,9 +1,9 @@
-import { nanoid } from "nanoid";
-import { BodyRecipe, Recipe } from "../01-utils/types";
 import { Request } from "express";
 import { validationResult } from "express-validator";
-import { RouteNotFoundError, ValidationError } from "../01-utils/client-errors";
+import { nanoid } from "nanoid";
+import recipeStats from "../01-utils/recipeStats";
 import recipeUtils from "../01-utils/recipeUtils";
+import { BodyRecipe, Recipe } from "../01-utils/types";
 const recipesData = require("../data/recipes.json");
 
 let recipes: Recipe[] = recipesData;
@@ -23,6 +23,14 @@ function addRecipe(body: BodyRecipe): Recipe {
     return recipe;
 }
 
+function updateFullRecipe(id: string, recipeUpdatedBody: BodyRecipe): Recipe {
+    const originalRecipeIndex = recipes.findIndex(r => r.id === id);
+    const originalRecipe = recipes[originalRecipeIndex];
+    const updateFullRecipe: Recipe = { ...recipeUpdatedBody, id, createdAt: originalRecipe.createdAt };
+    recipes[originalRecipeIndex] = updateFullRecipe;
+    return updateFullRecipe;
+}
+
 function deleteRecipeById(id: string): void {
     recipes = recipes.filter(r => r.id !== id);
 }
@@ -38,8 +46,15 @@ function getRecipesByQuery(request: Request): Recipe[] {
     return filteredRecipes ? filteredRecipes : [];
 }
 
+function getStats(): { totalCount: number, avgCookingTime: number, recipesByDifficulty: Recipe[] } {
+    const totalCount = recipeStats.totalCount(recipes);
+    const avgCookingTime = recipeStats.cookingTimeAVG(recipes);
+    const recipesByDifficulty = recipeStats.recipesByDifficulty(recipes);
+    const statsObj = { totalCount, avgCookingTime, recipesByDifficulty };
+    return statsObj;
+}
 
 export default {
-    getRecipes, getRecipeById, addRecipe, deleteRecipeById, validateRecipeBody, getRecipesByQuery
+    getRecipes, getRecipeById, addRecipe, deleteRecipeById, validateRecipeBody, getRecipesByQuery, updateFullRecipe, getStats
 }
 
