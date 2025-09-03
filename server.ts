@@ -8,9 +8,9 @@ import recipesRouter from "./05-routes/recipesRouter";
 import routeNotFound from './03-middlewares/routeNotFound';
 import morgan from 'morgan';
 import path from 'path';
-import fs from 'fs'
-
-
+import fs from 'fs';
+import db from './db/models/'; // This connects to DB
+const sequelize = db.sequelize;
 
 // Load environment variables from .env file
 dotenv.config();
@@ -39,3 +39,19 @@ server.use(catchAll);
 server.listen(process.env.PORT, () => {
     console.log('listening on port:' + process.env.PORT);
 })
+
+// Test database connection
+async function testConnection() {
+    try {
+        await sequelize.authenticate();
+        console.log('✅ Database connection established successfully.');
+    } catch (error) {
+        console.error('❌ Unable to connect to database:', error);
+    }
+}
+server.listen(process.env.PORT, async () => {
+    console.log(`🚀 Server running on port ${process.env.PORT}`);
+    await testConnection();
+});
+
+
