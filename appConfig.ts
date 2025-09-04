@@ -1,9 +1,15 @@
 import dotenv from 'dotenv';
+import { Sequelize } from 'sequelize';
 dotenv.config()
 
-class AppConfig{
-    public dbConnection = `mysql://${process.env.DB_HOST}:DB_PASS@localhost:3306/${process.env.DB_NAME}`;
+class AppConfig {
+    public dbUser =process.env.DB_USER;
+    public dbPass =process.env.DB_PASS;
+    public dbHost =process.env.DB_HOST;
+    public dbPort =process.env.DB_PORT;
+    public dbName =process.env.DB_NAME;
 
+    public sequelize = new Sequelize(`mysql://${this.dbUser}:${this.dbPass}@${this.dbHost}:${this.dbPort}/${this.dbName}`);
 }
 
 const appConfig = new AppConfig();

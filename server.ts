@@ -9,11 +9,14 @@ import routeNotFound from './03-middlewares/routeNotFound';
 import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
-import db from './db/models/'; // This connects to DB
-const sequelize = db.sequelize;
+import appConfig from './appConfig';
+// import db from './db/models/'; // This connects to DB
+// const sequelize = db.sequelize;
 
 // Load environment variables from .env file
 dotenv.config();
+
+const sequelize = appConfig.sequelize;
 
 const server = express();
 

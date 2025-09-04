@@ -1,6 +1,5 @@
 'use strict';
 
-
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
     /** types intellisense:
@@ -14,7 +13,7 @@ module.exports = {
                 primaryKey: true,
                 allowNull: false,
                 unique: true,
-                defaultValue: Sequelize.UUIDV4
+                defaultValue: Sequelize.UUIDV4,
             },
             userName: {
                 type: Sequelize.STRING(30),
@@ -41,6 +40,7 @@ module.exports = {
             createdAt: {
                 type: Sequelize.DATE,
                 allowNull: false,
+                defaultValue: Sequelize.NOW
             },
             updatedAt: {
                 type: Sequelize.DATE,
