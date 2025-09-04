@@ -13,7 +13,7 @@ module.exports = {
                 primaryKey: true,
                 allowNull: false,
                 unique: true,
-                defaultValue: Sequelize.UUIDV4,
+                defaultValue: Sequelize.literal('(UUID())'),
             },
             userName: {
                 type: Sequelize.STRING(30),
@@ -40,11 +40,11 @@ module.exports = {
             createdAt: {
                 type: Sequelize.DATE,
                 allowNull: false,
-                defaultValue: Sequelize.NOW
+                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             },
             updatedAt: {
                 type: Sequelize.DATE,
-                allowNull: false
+                allowNull: true
             },
         })
     },

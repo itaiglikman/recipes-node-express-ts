@@ -12,7 +12,7 @@ module.exports = {
                 type: Sequelize.UUID,
                 allowNull: false,
                 primaryKey: true,
-                defaultValue: Sequelize.UUIDV4,
+                defaultValue: Sequelize.literal('(UUID())'),
                 unique: true,
             },
             title: {
@@ -66,11 +66,10 @@ module.exports = {
             createdAt: {
                 type: Sequelize.DATE,
                 allowNull: false,
-                defaultValue: Sequelize.NOW
+                defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
             },
             updatedAt: {
                 type: Sequelize.DATE,
-                allowNull: false
             },
         })
     },
