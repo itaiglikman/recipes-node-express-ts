@@ -5,6 +5,7 @@ import expressRateLimit from "express-rate-limit";
 import catchAll from "./03-middlewares/catch-all";
 import logger from "./03-middlewares/logger";
 import recipesRouter from "./05-routes/recipesRouter";
+import authRouter from "./05-routes/authRouter";
 import routeNotFound from './03-middlewares/routeNotFound';
 import morgan from 'morgan';
 import path from 'path';
@@ -34,14 +35,11 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 server.use(morgan('combined', { stream: accessLogStream }));
 
 server.use('/recipes', recipesRouter);
+server.use('/auth', authRouter);
 
 server.use(routeNotFound)
 
 server.use(catchAll);
-
-server.listen(process.env.PORT, () => {
-    console.log('listening on port:' + process.env.PORT);
-})
 
 // Test database connection
 async function testConnection() {
@@ -52,9 +50,9 @@ async function testConnection() {
         console.error('❌ Unable to connect to database:', error);
     }
 }
-server.listen(process.env.PORT, async () => {
-    console.log(`🚀 Server running on port ${process.env.PORT}`);
-    await testConnection();
+server.listen(appConfig.port, async () => {
+    console.log(`🚀 Server running on port ${appConfig.port}`);
+    // await testConnection();
 });
 
 
