@@ -2,6 +2,12 @@ import { body } from "express-validator";
 
 // validation schema req.body of new recipe object:
 const recipeValidationSchema = [
+    body('userId')
+        .trim()
+        .exists()
+        .notEmpty().withMessage('UserId is required')
+        .isString().withMessage('UserId must be a string')
+    ,
     body('title')
         .trim()
         .exists()
@@ -58,6 +64,11 @@ const recipeValidationSchema = [
         .notEmpty().withMessage('Rating is required')
         .isFloat({ min: 0, max: 5 }).withMessage('Rating must be a decimal between 0 and 5')
         .toFloat()
+    ,
+    body('isPublic')
+        .optional()
+        .isBoolean().withMessage('isPublic must be boolean')
+        .default(true) // defaults to private if not provided
     ,
 ];
 
