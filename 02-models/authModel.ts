@@ -6,18 +6,16 @@ import appConfig from "../appConfig";
 
 const sequelize = appConfig.sequelize;
 
-async function registerUser(user: BodyUser) {
+async function registerUser(user: BodyUser): Promise<User> {
     const newUser = await createUser(user);
-    const token = authUtils.createToken(newUser);
-    return token;
+    return newUser;
 }
 
-async function login(credentials: Credentials) {
+async function login(credentials: Credentials): Promise<User> {
     const user = await getUserByEmail(credentials.email.toLocaleLowerCase());
     await authUtils.comparePass(credentials.password, user.password);
     const clientUser = authUtils.sanitizeUser(user);
-    const token = authUtils.createToken(clientUser);
-    return token;
+    return clientUser;
 }
 
 async function createUser(user: BodyUser): Promise<User> {

@@ -9,7 +9,7 @@ function encryptPassword(password: string) {
     return bcrypt.hashSync(password, salt);
 }
 
-function createToken(user: User) {
+function createToken(user: User):string {
     const token = jwt.sign(user, process.env.JWT_SECRET, { expiresIn: "24h" });
     return token;
 }
