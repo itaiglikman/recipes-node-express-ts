@@ -1,10 +1,11 @@
 import express from "express";
-import { getRecipes, getRecipeById, addRecipe, deleteRecipeById, updateFullRecipe, getStats, getLoggedUserRecipes } from '../04-controllers/recipesController';
-import validateId from "../03-middlewares/validateId";
 import recipeValidationSchema from "../01-utils/validation-schemas/recipeValidationSchema";
-import { verifyToken } from "../03-middlewares/verifyToken";
-import validateRecipeBody from "../03-middlewares/validateRecipeBody";
+import validateId from "../03-middlewares/validateId";
+import { validateUpload } from "../01-utils/handleImages";
 import { validateRecipeOwnership } from "../03-middlewares/validateMatchingUser";
+import validateRecipeBody from "../03-middlewares/validateRecipeBody";
+import { verifyToken } from "../03-middlewares/verifyToken";
+import { addRecipe, deleteRecipeById, getLoggedUserRecipes, getRecipeById, getRecipes, updateFullRecipe } from '../04-controllers/recipesController';
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router.get('/:id', validateId, getRecipeById);
 // POST
 router.post('/',
     verifyToken, //auth
+    validateUpload.single('imageFile'), // file upload and validation
     recipeValidationSchema, validateRecipeBody, validateRecipeOwnership, // body validation
     addRecipe // action
 );
@@ -24,6 +26,7 @@ router.post('/',
 // PUT
 router.put('/:id',
     verifyToken, validateId, //auth
+    validateUpload.single('imageFile'), // file upload and validation
     recipeValidationSchema, validateRecipeBody, validateRecipeOwnership, // body validation
     updateFullRecipe // action
 );

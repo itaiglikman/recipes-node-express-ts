@@ -1,7 +1,7 @@
 import { Request } from "express";
 import { Result, ValidationError } from "express-validator";
 import { RouteNotFoundError, ValidationError as ValidationErrorClient } from "./client-errors";
-import { Recipe } from "./types";
+import { BodyRecipe, Recipe } from "./types";
 
 function handleRecipeValidationError(errors: Result<ValidationError>) {
     const msgSet = new Set();
@@ -42,7 +42,15 @@ function filterByQuery(request: Request, recipes: Recipe[]): Recipe[] | void {
     }
 }
 
+// modify BodyRecipe arrays to strings to save in db:
+function stringifyArrValuesForQuery(body: BodyRecipe, id: string) {
+    const strIngredients = JSON.stringify(body.ingredients);
+    const strInstructions = JSON.stringify(body.instructions);
+    const queryBody = { ...body, ingredients: strIngredients, instructions: strInstructions }
+    return { id, ...queryBody };
+}
+
 
 export default {
-    filterByQuery, handleRecipeValidationError
+    filterByQuery, handleRecipeValidationError, stringifyArrValuesForQuery
 }

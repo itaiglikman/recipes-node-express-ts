@@ -5,6 +5,7 @@ import recipeUtils from "../01-utils/recipeUtils";
 import { BodyRecipe, Recipe } from "../01-utils/types";
 import appConfig from "../appConfig";
 import { ResourceNotFoundError } from "../01-utils/client-errors";
+import { deleteImage } from "../01-utils/handleImages";
 const recipesData = require("../data/recipes.json");
 const sequelize = appConfig.sequelize;
 let recipes: Recipe[] = recipesData;
@@ -35,33 +36,45 @@ async function addRecipe(body: BodyRecipe): Promise<Recipe> {
     const id = uuid(); // Generate UUID in application
     const query = `
         INSERT INTO recipes 
-        (id,userId,title,description,ingredients,instructions,cookingTime,servings,difficulty,isPublic,rating) 
-        VALUES (:id,:userId,:title,:description,:ingredients,:instructions,:cookingTime,:servings,:difficulty,:isPublic,:rating)`;
+        (id,userId,title,description,ingredients,instructions,cookingTime,servings,difficulty,isPublic,rating,imageURL) 
+        VALUES (:id,:userId,:title,:description,:ingredients,:instructions,:cookingTime,:servings,:difficulty,:isPublic,:rating,:imageURL)`;
 
-    const values = { id, ...body };
+    const values = recipeUtils.stringifyArrValuesForQuery(body, id);
     await sequelize.query(query, { replacements: values })
-    const recipe: Recipe = values;
+
+    const recipe: Recipe = { id, ...body } as Recipe;
     return recipe;
 }
 
 async function updateFullRecipe(id: string, recipeUpdatedBody: BodyRecipe): Promise<Recipe> {
+    // save old image path to delete after successfully updating
+    const oldRecipe = await getRecipeById(id);
+    const oldImage = oldRecipe.imageURL;
+
     const query = `
-        UPDATE recipes 
-        SET userId = :userId, title = :title,
-            description = :description, ingredients = :ingredients,
+    UPDATE recipes 
+    SET userId = :userId, title = :title,
+    description = :description, ingredients = :ingredients,
             instructions = :instructions, cookingTime = :cookingTime,
             servings = :servings, difficulty = :difficulty,
-            isPublic = :isPublic, rating = :rating
+            isPublic = :isPublic, rating = :rating, imageURL = :imageURL
         WHERE id = :id`;
-    const values = { id, ...recipeUpdatedBody };
+
+    const values = recipeUtils.stringifyArrValuesForQuery(recipeUpdatedBody, id);
 
     await sequelize.query(query, { replacements: values })
-    const updateFullRecipe: Recipe = values;
+
+    // delete old image if exist
+    if (oldImage) await deleteImage(oldRecipe.imageURL);
+    
+    const updateFullRecipe: Recipe = { id, ...recipeUpdatedBody } as Recipe;
     return updateFullRecipe;
 }
 
 // delete by recipe id and authenticated user id
 async function deleteRecipeById(id: string, userId: string): Promise<void> {
+    const recipe = await getRecipeById(id);
+    if (recipe.imageURL) await deleteImage(recipe.imageURL)
     const query = `DELETE FROM recipes WHERE id = :id AND userId = :userId;`;
 
     const [result]: any = await sequelize.query(query, { replacements: { id, userId } });

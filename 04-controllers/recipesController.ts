@@ -25,19 +25,23 @@ export async function getLoggedUserRecipes(request: Request, response: Response,
 
 // check if the validation has new attr
 export async function addRecipe(request: Request, response: Response, next: NextFunction) {
+    const imagePath = request?.file.path;
+    request.body.imageURL = imagePath;
     const recipe = await recipesModel.addRecipe(request.body);
     response.status(StatusCode.Created).json(recipe);
 }
 
 export async function updateFullRecipe(request: Request, response: Response, next: NextFunction) {
     const id = request.params.id;
+    const imagePath = request?.file.path;
+    request.body.imageURL = imagePath;
     const updatedRecipe = await recipesModel.updateFullRecipe(id, request.body);
     response.status(StatusCode.OK).json(updatedRecipe);
 }
 
 export async function deleteRecipeById(request: Request, response: Response, next: NextFunction) {
     const id = request.params.id;
-    const userId = request.user.id
+    const userId = request.user.id;
     await recipesModel.deleteRecipeById(id, userId);
     response.status(StatusCode.NoContent).json({ message: 'Deleted successfully' })
 }
