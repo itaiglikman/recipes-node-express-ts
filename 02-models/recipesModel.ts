@@ -1,52 +1,81 @@
 import { Request } from "express";
-import { validationResult } from "express-validator";
-import { nanoid } from "nanoid";
+import { v4 as uuid } from 'uuid';
 import recipeStats from "../01-utils/recipeStats";
 import recipeUtils from "../01-utils/recipeUtils";
 import { BodyRecipe, Recipe } from "../01-utils/types";
+import appConfig from "../appConfig";
+import { ResourceNotFoundError } from "../01-utils/client-errors";
 const recipesData = require("../data/recipes.json");
-
+const sequelize = appConfig.sequelize;
 let recipes: Recipe[] = recipesData;
 
-function getRecipes() {
+async function getRecipes(): Promise<Recipe[]> {
+    const query = `SELECT * FROM recipes`
+    const [result] = await sequelize.query(query);
+    const recipes = result as Recipe[];
     return recipes;
 }
 
-function getRecipeById(id: string): Recipe {
-    const recipe = recipes.find(r => r.id === id);
+async function getRecipeById(id: string): Promise<Recipe> {
+    const query = `SELECT * FROM recipes WHERE id=?`
+    const [result] = await sequelize.query(query, { replacements: [id] })
+    const recipe = result[0] as Recipe;
     return recipe;
 }
 
-function addRecipe(body: BodyRecipe): Recipe {
-    const recipe: Recipe = { ...body, id: nanoid(5), createdAt: new Date().toISOString() };
-    recipes.push(recipe);
+async function getUserRecipes(userId: string): Promise<Recipe[]> {
+    const query = `SELECT * FROM recipes WHERE userId=?;`
+    const [result] = await sequelize.query(query, { replacements: [userId] });
+    console.log('getUserRecipes:', result);
+    const recipes = result as Recipe[];
+    return recipes;
+}
+
+async function addRecipe(body: BodyRecipe): Promise<Recipe> {
+    const id = uuid(); // Generate UUID in application
+    const query = `
+        INSERT INTO recipes 
+        (id,userId,title,description,ingredients,instructions,cookingTime,servings,difficulty,isPublic,rating) 
+        VALUES (:id,:userId,:title,:description,:ingredients,:instructions,:cookingTime,:servings,:difficulty,:isPublic,:rating)`;
+
+    const values = { id, ...body };
+    await sequelize.query(query, { replacements: values })
+    const recipe: Recipe = values;
     return recipe;
 }
 
-function updateFullRecipe(id: string, recipeUpdatedBody: BodyRecipe): Recipe {
-    const originalRecipeIndex = recipes.findIndex(r => r.id === id);
-    const originalRecipe = recipes[originalRecipeIndex];
-    const updateFullRecipe: Recipe = { ...recipeUpdatedBody, id, createdAt: originalRecipe.createdAt };
-    recipes[originalRecipeIndex] = updateFullRecipe;
+async function updateFullRecipe(id: string, recipeUpdatedBody: BodyRecipe): Promise<Recipe> {
+    const query = `
+        UPDATE recipes 
+        SET userId = :userId, title = :title,
+            description = :description, ingredients = :ingredients,
+            instructions = :instructions, cookingTime = :cookingTime,
+            servings = :servings, difficulty = :difficulty,
+            isPublic = :isPublic, rating = :rating
+        WHERE id = :id`;
+    const values = { id, ...recipeUpdatedBody };
+
+    await sequelize.query(query, { replacements: values })
+    const updateFullRecipe: Recipe = values;
     return updateFullRecipe;
 }
 
-function deleteRecipeById(id: string): void {
-    recipes = recipes.filter(r => r.id !== id);
+// delete by recipe id and authenticated user id
+async function deleteRecipeById(id: string, userId: string): Promise<void> {
+    const query = `DELETE FROM recipes WHERE id = :id AND userId = :userId;`;
+
+    const [result]: any = await sequelize.query(query, { replacements: { id, userId } });
+    if (result.affectedRows === 0) // notify on unsuccessful delete
+        throw new ResourceNotFoundError(id);
 }
 
-function validateRecipeBody(request: Request) {
-    const errors = validationResult(request);
-    if (!errors.isEmpty())
-        recipeUtils.handleRecipeValidationError(errors);
-}
-
-function getRecipesByQuery(request: Request): Recipe[] {
-    const filteredRecipes = recipeUtils.filterByQuery(request, getRecipes());
+async function getRecipesByQuery(request: Request): Promise<Recipe[]> {
+    const recipes = await getRecipes()
+    const filteredRecipes = recipeUtils.filterByQuery(request, recipes);
     return filteredRecipes ? filteredRecipes : [];
 }
 
-function getStats(): { totalCount: number, avgCookingTime: number, recipesByDifficulty: Recipe[] } {
+async function getStats(): Promise<{ totalCount: number, avgCookingTime: number, recipesByDifficulty: Recipe[] }> {
     const totalCount = recipeStats.totalCount(recipes);
     const avgCookingTime = recipeStats.cookingTimeAVG(recipes);
     const recipesByDifficulty = recipeStats.recipesByDifficulty(recipes);
@@ -55,6 +84,7 @@ function getStats(): { totalCount: number, avgCookingTime: number, recipesByDiff
 }
 
 export default {
-    getRecipes, getRecipeById, addRecipe, deleteRecipeById, validateRecipeBody, getRecipesByQuery, updateFullRecipe, getStats
+    getRecipes, getRecipeById, addRecipe, deleteRecipeById,
+    getRecipesByQuery, updateFullRecipe, getStats, getUserRecipes,
 }
 
