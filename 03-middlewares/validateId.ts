@@ -3,7 +3,7 @@
     import recipesModel from "../02-models/recipesModel";
 
     // log request time and method
-    async function validateId(request: Request, response: Response, next: NextFunction): Promise<void> {
+    async function validateRecipeId(request: Request, response: Response, next: NextFunction): Promise<void> {
 
         const id = request.params.id;
         // id not send in url
@@ -21,4 +21,4 @@
         next();
     }
 
-    export default validateId;
+    export default validateRecipeId;

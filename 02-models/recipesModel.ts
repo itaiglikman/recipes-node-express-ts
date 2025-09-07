@@ -6,9 +6,7 @@ import { BodyRecipe, Recipe } from "../01-utils/types";
 import appConfig from "../appConfig";
 import { ResourceNotFoundError } from "../01-utils/client-errors";
 import { deleteImage } from "../01-utils/handleImages";
-const recipesData = require("../data/recipes.json");
 const sequelize = appConfig.sequelize;
-let recipes: Recipe[] = recipesData;
 
 async function getRecipes(): Promise<Recipe[]> {
     const query = `SELECT * FROM recipes`
@@ -88,16 +86,17 @@ async function getRecipesByQuery(request: Request): Promise<Recipe[]> {
     return filteredRecipes ? filteredRecipes : [];
 }
 
-async function getStats(): Promise<{ totalCount: number, avgCookingTime: number, recipesByDifficulty: Recipe[] }> {
-    const totalCount = recipeStats.totalCount(recipes);
-    const avgCookingTime = recipeStats.cookingTimeAVG(recipes);
-    const recipesByDifficulty = recipeStats.recipesByDifficulty(recipes);
-    const statsObj = { totalCount, avgCookingTime, recipesByDifficulty };
-    return statsObj;
-}
+// async function getStats(): Promise<{ totalCount: number, avgCookingTime: number, recipesByDifficulty: Recipe[] }> {
+//     const totalCount = recipeStats.totalCount(recipes);
+//     const avgCookingTime = recipeStats.cookingTimeAVG(recipes);
+//     const recipesByDifficulty = recipeStats.recipesByDifficulty(recipes);
+//     const statsObj = { totalCount, avgCookingTime, recipesByDifficulty };
+//     return statsObj;
+// }
 
 export default {
     getRecipes, getRecipeById, addRecipe, deleteRecipeById,
-    getRecipesByQuery, updateFullRecipe, getStats, getUserRecipes,
+    getRecipesByQuery, updateFullRecipe,  getUserRecipes,
+    // getStats,
 }
 

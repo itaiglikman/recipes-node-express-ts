@@ -6,13 +6,12 @@ import catchAll from "./03-middlewares/catch-all";
 import logger from "./03-middlewares/logger";
 import recipesRouter from "./05-routes/recipesRouter";
 import authRouter from "./05-routes/authRouter";
+import favoritesRouter from "./05-routes/favoritesRouter";
 import routeNotFound from './03-middlewares/routeNotFound';
 import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 import appConfig from './appConfig';
-// import db from './db/models/'; // This connects to DB
-// const sequelize = db.sequelize;
 
 // Load environment variables from .env file
 dotenv.config();
@@ -36,6 +35,7 @@ server.use(morgan('combined', { stream: accessLogStream }));
 
 server.use('/recipes', recipesRouter);
 server.use('/auth', authRouter);
+server.use('/users/favorites', favoritesRouter)
 
 server.use(routeNotFound)
 

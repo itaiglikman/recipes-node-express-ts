@@ -46,7 +46,7 @@ export async function deleteRecipeById(request: Request, response: Response, nex
     response.status(StatusCode.NoContent).json({ message: 'Deleted successfully' })
 }
 
-export async function getStats(request: Request, response: Response, next: NextFunction) {
-    const stats = recipesModel.getStats();
-    response.status(StatusCode.OK).json(stats);
-}
+// export async function getStats(request: Request, response: Response, next: NextFunction) {
+//     const stats = recipesModel.getStats();
+//     response.status(StatusCode.OK).json(stats);
+// }
