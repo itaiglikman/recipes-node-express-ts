@@ -46,3 +46,9 @@ export class ForbiddenError extends ClientError {
         super(StatusCode.Forbidden, message);
     }
 }
+
+export class CustomError extends ClientError {
+    constructor(status: StatusCode, message?: string) {
+        super(status, message);
+    }
+}

@@ -1,18 +1,17 @@
 import express from "express";
 import validateRecipeId from "../03-middlewares/validateId";
-import { validateRecipeOwnership } from "../03-middlewares/validateRecipeOwnership";
 import { verifyToken } from "../03-middlewares/verifyToken";
-import { addFavorite, getFavorites } from "../04-controllers/favoritesController";
+import { addFavorite, deleteFavorite, getAllFavorites } from "../04-controllers/favoritesController";
 
 const router = express.Router();
 
 // GET
-router.get('/', getFavorites);
+router.get('/', verifyToken, getAllFavorites);
 
 // POST
-// add favorite recipe to user
 router.post('/:id', verifyToken, validateRecipeId, addFavorite);
 
 // DELETE
+router.delete('/:id', verifyToken, validateRecipeId, deleteFavorite);
 
 export default router;
