@@ -66,10 +66,15 @@ export type RequestUser = {
     username: string
 }
 
-export type CommentBody = {
+export type NewCommentBody = {
     recipeId: string,
     userId: string,
     username: string
+    comment: string,
+    rating: number
+}
+
+export type UpdateCommentBody = {
     comment: string,
     rating: number
 }

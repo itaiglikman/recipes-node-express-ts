@@ -1,5 +1,5 @@
 import express from "express";
-import validateRecipeId from "../03-middlewares/validateId";
+import validateRecipeId from "../03-middlewares/validateRecipeId";
 import { verifyToken } from "../03-middlewares/verifyToken";
 import { addFavorite, deleteFavorite, getAllFavorites } from "../04-controllers/favoritesController";
 

@@ -1,16 +1,20 @@
 import express from "express";
-import validateRecipeId from "../03-middlewares/validateId";
+import validateCommentId from "../03-middlewares/validateCommentId";
+import { validateResourceOwnership } from "../03-middlewares/validateResourceOwnership";
 import { verifyToken } from "../03-middlewares/verifyToken";
-import { addComment } from "../04-controllers/commentsController";
+import { getCommentById, updateComment } from "../04-controllers/commentsController";
 
 const router = express.Router();
 
-// get post's comment:
-router.get('/',
+router.put('/:commentId',
     verifyToken,
-    validateRecipeId, 
-    addComment
-);
+    validateCommentId, /*validate body,*/
+    // validateResourceOwnership,
+    updateComment
+)
 
+router.get('/:commentId',
+    getCommentById
+)
 
 export default router;

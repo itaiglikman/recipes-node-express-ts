@@ -1,7 +1,7 @@
-import { CommentBody } from "../01-utils/types";
+import { NewCommentBody, UpdateCommentBody } from "../01-utils/types";
 import { CommentModel, ICommentModel } from "../06-schemas/commentSchema";
 
-async function addComment(commentData: CommentBody): Promise<ICommentModel> {
+async function addComment(commentData: NewCommentBody): Promise<ICommentModel> {
     const comment = new CommentModel(commentData);
     const result = await comment.save();
     return result;
@@ -29,6 +29,29 @@ async function getCommentsByRecipeId(recipeId: string): Promise<{ comments: ICom
     return result as { comments: ICommentModel[], avgRating: number } | [];
 }
 
+async function getCommentById(commentId: string) {
+    try {
+        const result = await CommentModel.findById(commentId);
+        return result;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function updateComment(commentId: string, commentBody: UpdateCommentBody): Promise<ICommentModel> {
+    const updatedData = {
+        comment: commentBody.comment,
+        rating: commentBody.rating,
+        isEdited: true
+    }
+    const options = {
+        new: true, // return the updated document
+        runValidators: true // run the schema validations
+    }
+    const result = await CommentModel.findByIdAndUpdate(commentId, updatedData, options);
+    return result;
+}
+
 export default {
-    addComment, getCommentsByRecipeId
+    getCommentById, addComment, getCommentsByRecipeId, updateComment
 }

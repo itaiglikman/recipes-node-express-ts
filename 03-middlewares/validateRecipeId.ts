@@ -6,6 +6,7 @@
     async function validateRecipeId(request: Request, response: Response, next: NextFunction): Promise<void> {
 
         const id = request.params.id;
+        console.log(request.params)
         // id not send in url
         if (!id) {
             console.log('validateId middleware: no recipe id param');

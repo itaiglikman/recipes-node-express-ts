@@ -1,8 +1,8 @@
 import express from "express";
 import recipeValidationSchema from "../01-utils/validation-schemas/recipeValidationSchema";
-import validateRecipeId from "../03-middlewares/validateId";
+import validateRecipeId from "../03-middlewares/validateRecipeId";
 import { validateUpload } from "../01-utils/handleImages";
-import { validateRecipeOwnership } from "../03-middlewares/validateRecipeOwnership";
+import { validateResourceOwnership } from "../03-middlewares/validateResourceOwnership";
 import validateRecipeBody from "../03-middlewares/validateRecipeBody";
 import { verifyToken } from "../03-middlewares/verifyToken";
 import { addRecipe, deleteRecipeById, getLoggedUserRecipes, getRecipeById, getRecipes, updateFullRecipe } from '../04-controllers/recipesController';
@@ -34,7 +34,7 @@ router.get('/:id', validateRecipeId, getRecipeById);
 router.post('/',
     verifyToken, //auth
     validateUpload.single('imageFile'), // file upload and validation
-    recipeValidationSchema, validateRecipeBody, validateRecipeOwnership, // body validation
+    recipeValidationSchema, validateRecipeBody, validateResourceOwnership, // body validation
     addRecipe // action
 );
 
@@ -42,7 +42,7 @@ router.post('/',
 router.put('/:id',
     verifyToken, validateRecipeId, //auth
     validateUpload.single('imageFile'), // file upload and validation
-    recipeValidationSchema, validateRecipeBody, validateRecipeOwnership, // body validation
+    recipeValidationSchema, validateRecipeBody, validateResourceOwnership, // body validation
     updateFullRecipe // action
 );
 
