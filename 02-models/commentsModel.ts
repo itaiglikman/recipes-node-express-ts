@@ -52,6 +52,19 @@ async function updateComment(commentId: string, commentBody: UpdateCommentBody):
     return result;
 }
 
+async function toggleLike(commentId: string, userId: string) {
+    const comment = await CommentModel.findById(commentId);
+    const hasLiked = comment.likes.includes(userId);
+    console.log('toggleLike', commentId, hasLiked)
+    return await CommentModel.findByIdAndUpdate(
+        commentId,
+        hasLiked 
+            ? { $pull: { likes: userId } }
+            : { $addToSet: { likes: userId } },
+        { new: true }
+    );
+}
+
 export default {
-    getCommentById, addComment, getCommentsByRecipeId, updateComment
+    getCommentById, addComment, getCommentsByRecipeId, updateComment, toggleLike
 }

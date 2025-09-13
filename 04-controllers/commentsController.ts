@@ -67,3 +67,19 @@ export async function updateComment(request: Request, response: Response, next: 
         next(error);
     }
 }
+/*
+req.params.commentId
+req.user.userId
+*/
+export async function toggleLike(request: Request, response: Response, next: NextFunction) {
+    try {
+        const commentId = request.params.commentId;
+        const userId = request.user.id
+        const newComment = await commentsModel.toggleLike(commentId,userId);
+        response.status(StatusCode.OK).json(newComment);
+    } catch (error) {
+        if (error.name === 'ValidationError')
+            errorsHandling.handleSchemaErrors(error);
+        next(error);
+    }
+}
