@@ -12,6 +12,7 @@ import morgan from 'morgan';
 import path from 'path';
 import fs from 'fs';
 import appConfig from './appConfig';
+import mongoose from 'mongoose';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -50,7 +51,19 @@ async function testConnection() {
         console.error('❌ Unable to connect to database:', error);
     }
 }
+
+async function dbConnect() {
+    try {
+        const dbConnectionString = `mongodb+srv://itaig1998_db_user:${process.env.MONGO_DB_PASS}@cluster0.oypbsmo.mongodb.net/Recipes?retryWrites=true&w=majority&appName=Cluster0`;
+        const db = await mongoose.connect(dbConnectionString);
+        console.log("we are connected to mongoDB, db: " + db.connections[0].name);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 server.listen(appConfig.port, async () => {
+    await dbConnect();
     console.log(`🚀 Server running on port ${appConfig.port}`);
     // await testConnection();
 });
