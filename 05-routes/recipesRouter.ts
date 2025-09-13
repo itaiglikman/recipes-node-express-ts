@@ -6,8 +6,15 @@ import { validateRecipeOwnership } from "../03-middlewares/validateRecipeOwnersh
 import validateRecipeBody from "../03-middlewares/validateRecipeBody";
 import { verifyToken } from "../03-middlewares/verifyToken";
 import { addRecipe, deleteRecipeById, getLoggedUserRecipes, getRecipeById, getRecipes, updateFullRecipe } from '../04-controllers/recipesController';
+import { addComment } from "../04-controllers/commentsController";
 
 const router = express.Router();
+
+router.post('/:id/comments',
+    verifyToken,
+    validateRecipeId, /*validate body,*/
+    addComment
+);
 
 // GET
 router.get('/', verifyToken, getRecipes);
