@@ -23,7 +23,7 @@ export type BodyRecipe = {
     cookingTime: number,
     servings: number,
     isPublic: boolean,
-    imageURL:string,
+    imageURL: string,
     difficulty: 'easy' | 'medium' | 'hard',
     rating: number,
 }
@@ -63,6 +63,15 @@ export type Credentials = {
 export type RequestUser = {
     id: string,
     email: string
+    username: string
+}
+
+export type CommentBody = {
+    recipeId: string,
+    userId: string,
+    username: string
+    comment: string,
+    rating: number
 }
 
 // add user to express request object

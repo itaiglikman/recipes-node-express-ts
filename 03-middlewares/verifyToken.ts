@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from 'jsonwebtoken';
 import { UnauthorizedError } from "../01-utils/client-errors";
-import { User } from "../01-utils/types";
 
 // verify access for logged users only by token verification
 export function verifyToken(request: Request, response: Response, next: NextFunction) {
@@ -9,9 +8,9 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
     if (!token)
         throw new UnauthorizedError("You're not authorized!");
     try {
-        const user = jwt.verify(token, process.env.JWT_SECRET) as User;
+        const user = jwt.verify(token, process.env.JWT_SECRET) as any;
         console.log('verifyToken userId:', user.id);
-        request.user = { id: user.id, email: user.email }; // insert user info to request object:
+        request.user = { id: user.id, email: user.email, username: user.userName }; // insert user info to request object:
         next();
     } catch (err) {
         console.log('verifyToken error:', err);
