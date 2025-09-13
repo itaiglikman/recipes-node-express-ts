@@ -17,6 +17,16 @@ export async function addComment(request: Request, response: Response, next: Nex
     } catch (error) {
         if (error.name === 'ValidationError')
             errorsHandling.handleSchemaErrors(error);
-        next(error)
+        next(error);
+    }
+}
+
+export async function getRecipeComments(request: Request, response: Response, next: NextFunction) {
+    try {
+        const recipeId = request.params.id;
+        const comments = await commentsModel.getCommentsByRecipeId(recipeId);
+        response.status(StatusCode.Created).json(comments);
+    } catch (error) {
+        next(error);
     }
 }

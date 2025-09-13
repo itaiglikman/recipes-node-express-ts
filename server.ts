@@ -5,6 +5,7 @@ import expressRateLimit from "express-rate-limit";
 import catchAll from "./03-middlewares/catch-all";
 import logger from "./03-middlewares/logger";
 import recipesRouter from "./05-routes/recipesRouter";
+import commentsRouter from "./05-routes/commentsRouter";
 import authRouter from "./05-routes/authRouter";
 import favoritesRouter from "./05-routes/favoritesRouter";
 import routeNotFound from './03-middlewares/routeNotFound';
@@ -35,6 +36,7 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'),
 server.use(morgan('combined', { stream: accessLogStream }));
 
 server.use('/recipes', recipesRouter);
+server.use('/comments', commentsRouter);
 server.use('/auth', authRouter);
 server.use('/users/favorites', favoritesRouter)
 
